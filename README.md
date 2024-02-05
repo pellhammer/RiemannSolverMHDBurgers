@@ -1,4 +1,4 @@
-# Background viscosity dependent Riemann solver for two inviscid Burgers equations
+# Background viscosity dependent Riemann solver for the MHD-Burgers model
 
 
 ## DESCRIPTION:
