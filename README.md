@@ -2,12 +2,15 @@
 
 
 ## DESCRIPTION:
-The enclosed MATLAB function computes the values of the unique solution to the Riemann problem for two inviscid Burgers equations at the time level
-t=1 such that every discontonuity has a viscous profile w.r.t. the viscosity matrix [1,kappa;kappa,1] for -1 &lt; kappa &lt; 1.
-This code refers to the paper "Dependence on the background viscosity of solutions to a prototypical non-strictly hyperbolic system of conservation laws"
-written by Heinrich Freistühler and the author of this code.
-
-All codes are written in MATLAB R2020a.
+An exact Riemann solver for the MHD-Burgers model
+$$
+\begin{pmatrix} u\\v\end{pmatrix}_t + \begin{pmatrix} u\\v\end{pmatrix}_t
+$$
+such that each shock wave has a viscous profile with respect to the parabolic regularization
+$$
+\begin{pmatrix} u\\v\end{pmatrix}_t + \begin{pmatrix} u\\v\end{pmatrix}_t = B\begin{pmatrix} u\\v\end{pmatrix}_{xx}
+$$
+where $B$ is a symmetric and positive definite $2\times 2$ matrix.
 
 
 ## Author

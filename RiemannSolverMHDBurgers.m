@@ -1,23 +1,20 @@
-function [S1,S2] = riemannSolverBurgersSquared(uL,vL,uR,vR,kappa,evalPts)
+function [S1,S2] = RiemannSolverMHDBurgers(uL,vL,uR,vR,B,c,evalPts)
 % FUNCTION
-% S = riemannSolverBurgersSquared(uL,uR,vL,vR,kappa,evalPts)
-% Background viscosity dependent exact Riemann solver for two inviscid Burgers equations.
+% S = RiemannSolverMHDBurgers(uL,uR,vL,vR,kappa,evalPts)
+% Background viscosity dependent exact Riemann solver for the MHD-Burgers model.
 %
 % DESCRIPTION:
 % This function computes the values of the unique solution to the Riemann problem with initial
 % data ((uL,uR),(vL,vR)) at the points evalPts in space and the time level
-% t=1 such that every discontonuity has a viscous profile w.r.t. the
-% viscosity matrix [1,kappa;kappa,1] for -1 < kappa < 1.
-% This code refers to the paper "Dependence on the background viscosity of 
-% solutions to a prototypical non-strictly hyperbolic system of conservation laws"
-% written by Heinrich Freistühler and the author of this code.
+% t=1 such that every discontonuity has a viscous profile w.r.t. the symmetric, positive definite
+% viscosity matrix B.
 %
 % INPUT:
 %         uL - (array) left values in the u-variable
 %         uR - (array) right values in the u-variable
 %         vL - (array) left values in the v-variable
 %         vR - (array) right values in the v-variable
-%         kappa - (double) viscosity parameter. Number between -1 and 1
+%         B - (2x2 array) symmetric positive definite viscosity matrix
 %         evalPts - (array) evaluation points
 %
 % OUTPUT: 
@@ -44,14 +41,22 @@ function [S1,S2] = riemannSolverBurgersSquared(uL,vL,uR,vR,kappa,evalPts)
 % University of Konstanz, 78457 Konstanz
 % email adress: valentin.pellhammer@uni-konstanz.de
 % homepage: http://www.math.uni-konstanz.de/~pellhammer/
-%
-% Date: March 2020
-% Last revision: March 2020
 
 
-    if kappa<=-1 || kappa>=1
-        error('The third argument must be a value in (-1,1)');       
+
+
+    if ~isequal(size(B),[2,2]) || B(1,1)<=0 || det(B)<=0
+        error('Fifth argument must be a 2x2 symmteric, positive definite matrix');       
     end
+    if ~isscalar(c) || c<=0
+        error('Sixth argument must be positive scalar');       
+    end
+
+
+    % first transform the Matrix B to standart form
+
+    zeta = B(1,1)/B(2,2);
+    kappa = B(1,2)/B(2,2);
 
 
     % handle 3. in ASSUMPTIONS AND LIMITATIONS
@@ -61,28 +66,45 @@ function [S1,S2] = riemannSolverBurgersSquared(uL,vL,uR,vR,kappa,evalPts)
    
     % speeds of possible shockwaves
     uS = (1/2).*(uL+uR);
-    vS = (1/2).*(vL+vR);
+    vS = (1/2).*c*(vL+vR);
     
-    % handle dependency of kappa
-    if kappa > 0
-        f = (1+kappa+sqrt((1+kappa).^2-4*kappa.^2))./(2*kappa);  
-        Z = @(um,up,v) ((1/2).*(um-up)) <= (f.*abs(v-(1/2).*(um+up)));
-    else
-        f = Inf;  
-        Z = @(um,up,v) ones(size(um)); 
-    end
-    % scalar rarefaction wave function
-    rho = @(um,up,sigma) ((sigma<um) .* um  + (sigma>=um).*(sigma<=up).*sigma  + (sigma>up) .*up);
-   
-    % use logical matrices to avoid if-statements and handle multible Riemann problems at once
-    C1 = (uL<=uR) .* (vL<= vR);
-    C2 = (uL<=uR) .* (vL> vR) .* Z(vL,vR,rho(uL,uR,vS));
-    C3 = (uL>uR) .* (vL<= vR) .* Z(uL,uR,rho(vL,vR,uS));
-    C41 = (uL>uR) .* (vL> vR) .* ((uL+uR) < (vL+vR)) .* Z(uL,uR,vL) .* Z(vL,vR,uR);
-    C42 = (uL>uR) .* (vL> vR) .* ((uL+uR) >= (vL+vR)) .* Z(uL,uR,vR) .* Z(vL,vR,uL);
 
-    NCv = (uL>uR) .* (vL < ((1/2)*(uL+uR+(1/f)*(uL-uR)))) .* (vR > ((1/2)*(uL+uR-(1/f)*(uL-uR))));
-    NCu = (vL>vR) .* (uL < ((1/2)*(vL+vR+(1/f)*(vL-vR)))) .* (uR > ((1/2)*(vL+vR-(1/f)*(vL-vR))));
+    % scalar rarefaction wave functions
+    rhoU = @(um,up,sigma) ((sigma<um) .* um  + (sigma>=um).*(sigma<=up).*sigma  + (sigma>up) .*up);
+    rhoV = @(vm,vp,sigma) ((sigma<c*vm) .* vm  + (sigma>=c*vm).*(sigma<=c*vp).*sigma./c  + (sigma>c*vp) .*vp);
+  
+    
+
+    
+    if kappa<=0  % Riemann solver in the classical case
+
+        
+        % set values for u-component            
+        S1 = (uL<=uR) .* rhoU(uL,uR,evalPts)...
+            +(uL>uR) .*  ((evalPts<=uS) .* uL + (evalPts > uS).*uR);
+        %set values for v-component
+        S2 = (vL<=vR) .* rhoV(vL,vR,evalPts)...
+             +(vL>vR) .*  ((evalPts<=vS) .* vL + (evalPts > vS).*vR);
+
+    else % Riemann solver in the non-classical case
+    
+    % define visc angles
+    [omega1,omega2] = ViscAngles(kappa,zeta,c);
+
+
+    Z_u = @(um,up,v) ((1/2).*(um-up)) <= (-(1/omega2)* abs(v-(1/(2*c)).*(um+up)));
+    Z_v = @(vm,vp,u) ((1/2).*(vm-vp)) <= (-omega1* abs(u-(1/2)*c.*(vm+vp)));
+
+
+    % use logical matrices to avoid if-statements and handle multible Riemann problems at once
+    C1 = (uL<=uR) .* (vL<=vR);
+    C2 = (uL<=uR) .* (vL>vR) .* Z_v(vL,vR,rhoU(uL,uR,vS));
+    C3 = (uL>uR) .* (vL<=vR) .* Z_u(uL,uR,rhoV(vL,vR,uS));
+    C41 = (uL>uR) .* (vL>vR) .* ((uL+uR) < c*(vL+vR)) .*  Z_u(uL,uR,vL) .* Z_v(vL,vR,uR);
+    C42 = (uL>uR) .* (vL>vR) .* ((uL+uR) >= c*(vL+vR)) .* Z_u(uL,uR,vR) .* Z_v(vL,vR,uL);
+
+    NCv = (uL>uR) .* ((-(1/omega2).*(vL-(1/(2*c)).*(uL+uR))) < ((1/2)*(uL-uR))) .* (((1/omega2)*(vR-(1/(2*c))*(uL+uR))) < ((1/2)*(uL-uR)));
+    NCu = (vL>vR) .* ((-omega1*(uL-(1/2)*c*(vL+vR))) < ((1/2)*(vL-vR))) .* ((omega1*(uR-(1/2)*c*(vL+vR))) < ((1/2)*(vL-vR)));
     
     
     %%% values for the u-variable (S1) %%%
@@ -90,8 +112,8 @@ function [S1,S2] = riemannSolverBurgersSquared(uL,vL,uR,vR,kappa,evalPts)
     % setting speed of the undercompresive shock as well as the
     % intermediate states
     ucS = vS;
-    um1 = -abs((1/f)*((1/2)*(vL-vR)))+(1/2)*(vL+vR);
-    um2 = abs((1/f)*((1/2)*(vL-vR)))+(1/2)*(vL+vR);
+    um1 =  (1/(2*omega1))*(vL-vR) + (1/2)*c*(vL+vR);
+    um2 = -(1/(2*omega1))*(vL-vR) + (1/2)*c*(vL+vR);
     
     % speed of possible intermediate shocks
     s1 = (1/2).*(uL +um1);
@@ -129,11 +151,11 @@ function [S1,S2] = riemannSolverBurgersSquared(uL,vL,uR,vR,kappa,evalPts)
     % setting speed of the undercompresive shock as well as the
     % intermediate states
     ucS = uS;
-    vm1 = -abs((1/f)*((1/2)*(uL-uR)))+(1/2)*(uL+uR);
-    vm2 = abs((1/f)*((1/2)*(uL-uR)))+(1/2)*(uL+uR);
+    vm1 =  omega2*(1/2)*(uL-uR) + (1/(2*c))*(uL+uR);
+    vm2 = -omega2*(1/2)*(uL-uR) + (1/(2*c))*(uL+uR);
     
-    s1 = (1/2).*(vL +vm1);
-    s2 = (1/2).*(vm2+vR);
+    s1 = (1/2).*c*(vL + vm1);
+    s2 = (1/2).*c*(vm2 + vR);
         
     RSR = (vL <= vm1) .* (vR >= vm2);
     SSR = (vL > vm1) .* (vR >= vm2);
@@ -141,23 +163,24 @@ function [S1,S2] = riemannSolverBurgersSquared(uL,vL,uR,vR,kappa,evalPts)
     RSS = (vL <= vm1) .* (vR < vm2);
  
     % setting values for the solution in the v-variable for the classical and non-classical solution (S1)
-    S2class =  C1 .* ((evalPts <= vL) .* vL   +   (evalPts > vL).*(evalPts <= vR).*evalPts  +   (evalPts > vR).*vR)...
+    S2class =  C1 .* ((evalPts <= c*vL) .* vL   +   (evalPts > c*vL).*(evalPts <= c*vR).*evalPts./c  +   (evalPts > c*vR).*vR)...
         + C2 .* ((evalPts <= vS).*vL  +  (evalPts > vS).*vR)...
-        + C3 .* ((evalPts <= vL) .* vL   +   (evalPts > vL).*(evalPts <= vR).*evalPts  +   (evalPts > vR).*vR)...
+        + C3 .* ((evalPts <= c*vL) .* vL   +   (evalPts > c*vL).*(evalPts <= c*vR).*evalPts./c  +   (evalPts > c*vR).*vR)...
         + C41.* ((evalPts <= vS).*vL  +  (evalPts > vS).*vR)...
         + C42.* ((evalPts <= vS).*vL  +  (evalPts > vS).*vR);
     S2nonclass = NCu .* ((evalPts <= vS).*vL  +  (evalPts > vS).*vR)...
-                +NCv .* (RSR .* ((evalPts <= vL) .* vL   +   (evalPts > vL).*(evalPts <= vm1).*evalPts...  
-                              + (evalPts > vm1).*(evalPts < ucS).*vm1  +  (evalPts >= ucS).*(evalPts <= vm2).*vm2...
-                              + (evalPts > vm2).*(evalPts < vR).*evalPts + (evalPts >= vR) .* vR)...
+                +NCv .* (RSR .* ((evalPts <= c*vL) .* vL   +   (evalPts > c*vL).*(evalPts <= c*vm1).*evalPts./c...  
+                              + (evalPts > c*vm1).*(evalPts < ucS).*vm1  +  (evalPts >= ucS).*(evalPts <= c*vm2).*vm2...
+                              + (evalPts > c*vm2).*(evalPts < c*vR).*evalPts./c + (evalPts >= c*vR) .* vR)...
                        + SSR .* ((evalPts <= s1) .* vL   +   (evalPts > s1).*(evalPts <= ucS).*vm1...  
-                              + (evalPts > ucS).*(evalPts < vm2).*vm2  +  (evalPts >= vm2).*(evalPts <= vR).*evalPts...
-                              + (evalPts > vR).*vR)...
+                              + (evalPts > ucS).*(evalPts < (c*vm2)).*vm2  +  (evalPts >= (c*vm2)).*(evalPts <= (c*vR)).*evalPts./c...
+                              + (evalPts > c*vR).*vR)...
                        + SSS .* ((evalPts <= s1) .* vL   +   (evalPts > s1).*(evalPts <= ucS).*vm1...  
                               + (evalPts > ucS).*(evalPts < s2).*vm2  +  (evalPts >= s2).*vR)...
-                       + RSS .* ((evalPts <= vL) .* vL   +   (evalPts > vL).*(evalPts <= vm1).*evalPts...  
-                              + (evalPts > vm1).*(evalPts < ucS).*vm1  +  (evalPts >= ucS).*(evalPts <= s2).*vm2...
+                       + RSS .* ((evalPts <= c*vL) .* vL   +   (evalPts > c*vL).*(evalPts <= c*vm1).*evalPts./c...  
+                              + (evalPts > c*vm1).*(evalPts < ucS).*vm1  +  (evalPts >= ucS).*(evalPts <= s2).*vm2...
                               + (evalPts > s2).*vR)); 
-    S2 = S2class+S2nonclass;
-    S = [S1;S2];
+        S2 = S2class + S2nonclass;
+
+    end
 end
