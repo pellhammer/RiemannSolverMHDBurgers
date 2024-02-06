@@ -17,7 +17,7 @@ where $B$ is any symmetric and positive definite $2\times 2$ matrix.
 
 The function `RiemannSolverMHD.m` evaluates the unique(!) solution to the Riemann problem
 ```math
-u(x,0)=\begin{cases}(u_l,v_l),&x<0\\(u_r,v_r),&x>0\end{cases},\quad (u_l,v_l),(u_r,v_r)\in\mathabb{R}^2
+u(x,0)=\begin{cases}(u_l,v_l),&x<0\\(u_r,v_r),&x>0\end{cases},\quad (u_l,v_l),(u_r,v_r)\in\mathbb{R}^2
 
 ```
 for \ref{eq:ideal} such that each shock wave has a visous profile with respect to \ref{eq:visc}.
