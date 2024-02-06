@@ -4,11 +4,11 @@
 ## DESCRIPTION:
 An exact Riemann solver for the MHD-Burgers model
 ```math
-\begin{pmatrix} u\\v\end{pmatrix}_t + \begin{pmatrix} u\\v\end{pmatrix}_t
+\begin{pmatrix} u\\v\end{pmatrix}_t + \begin{pmatrix} \frac{1}{2}u\\\frac{1}{2}v\end{pmatrix}_x
 ```
 such that each shock wave has a viscous profile with respect to the parabolic regularization
 ```math
-\begin{pmatrix} u\\v\end{pmatrix}_t + \begin{pmatrix} u\\v\end{pmatrix}_t = B\begin{pmatrix} u\\v\end{pmatrix}_{xx}
+\begin{pmatrix} u\\v\end{pmatrix}_t + \begin{pmatrix} \frac{1}{2}u\\\frac{1}{2}v\end{pmatrix}_x = B\begin{pmatrix} u\\v\end{pmatrix}_{xx}
 ```
 where $B$ is a symmetric and positive definite $2\times 2$ matrix.
 
