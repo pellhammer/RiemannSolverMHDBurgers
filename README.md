@@ -28,7 +28,7 @@ Lax-shocks, rarefaction waves, and non-classical (undercompressive) shock waves.
 ## Usage examples
 
 
-![Plot of exemplary solution](./solExample.png)
+<img src="./solExample.png" width="100" height="30">
 
 
 
