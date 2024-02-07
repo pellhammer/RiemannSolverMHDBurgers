@@ -25,10 +25,10 @@ for (1) such that each shock wave has a visous profile with respect to (2). The 
 Lax-shocks, rarefaction waves, and non-classical (undercompressive) shock waves. 
 
 
-## Example
+## Usage examples
 
 
-
+![Plot of exemplary solution](./solExample.png)
 
 
 
