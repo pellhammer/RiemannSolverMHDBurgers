@@ -79,20 +79,20 @@ plot(evalPts,S2,'k-','LineWidth',3)
 ```
 This produces the following plot.
 
-<img src="./solExample.png" width="600" height="180">
+<img src="./solExample.png" width="500" height="160">
 
 #### Godunov method
 
 An example for the solver used in the Godunov method can be found in `ex1_godunov.m`.
-The sequece of Riemann problems at each timestep can be solved simultaneously.
+The sequence of Riemann problems at each timestep can be solved simultaneously.
 
-<img src="./GodunovEx.png" width="600" height="210">
+<img src="./GodunovEx.png" width="500" height="210">
 
 #### Random-choice method
 
 An example for the solver used in the random-choice method (Glimm's scheme) can be found in `ex2_glimm.m`.
 
-<img src="./GlimmEx.png" width="600" height="210">
+<img src="./GlimmEx.png" width="500" height="210">
 
 
 ## Author
