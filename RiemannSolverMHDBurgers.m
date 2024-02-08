@@ -16,11 +16,11 @@ function [S1,S2] = RiemannSolverMHDBurgers(uL,vL,uR,vR,B,c,evalPts)
 %         vR - (array) right values in the v-variable
 %         B - (2x2 array) symmetric positive definite viscosity matrix
 %         evalPts - (array) evaluation points
-%
+% 
 % OUTPUT: 
 %         S1 - (array) of the u components of the solution(s) evaluated at evalPts and t=1
 %         S2 - (array) of the v components of the solution(s) evaluated at evalPts and t=1
-%
+% 
 % ASSUMPTIONS AND LIMITATIONS: 
 %         Only the following combinations of input data are possible:
 %         1. uL,uR,vL,vR are numbers and evalPts is a matrix:

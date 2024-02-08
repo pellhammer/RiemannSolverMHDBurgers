@@ -25,12 +25,73 @@ for (1) such that each shock wave has a visous profile with respect to (2). The 
 Lax-shocks, rarefaction waves, and non-classical (undercompressive) shock waves. 
 
 
-## Usage examples
+## Syntax
+```
+[S1,S2] = RiemannSolverMHDBurgers(uL,vL,uR,vR,B,c,evalPts);
+```
+
+### Input:
+        uL - (array) left values in the u-variable
+        uR - (array) right values in the u-variable
+        vL - (array) left values in the v-variable
+        vR - (array) right values in the v-variable
+        B - (2x2 array) symmetric positive definite viscosity matrix
+        evalPts - (array) evaluation points
+
+### Output 
+        S1 - (array) of the u components of the solution(s) evaluated at evalPts and t=1
+        S2 - (array) of the v components of the solution(s) evaluated at evalPts and t=1
+
+### Possibilities;
+        1. uL,uR,vL,vR are numbers and evalPts is a matrix:
+          The output contains the values of the solution of the single Riemann
+          problem with data ((uL,uR),(vL,vR)).
+        2. uL,uR,vL,vR,evalPts are matrices of the same size:
+          The (i,j)-th entry of the output contains the value of the
+          solution to the Riemann problem with data ((uL(i,j),uR(i,j)),(vL(i,j),vR(i,j)))
+          evaluated at evalPts(i,j)
+        3. uL,uR,vL,vR are matrices of the same size and evalPts is a number:
+          The (i,j)-th entry of the output contains the value of the
+          solution to the Riemann problem with data ((uL(i,j),uR(i,j)),(vL(i,j),vR(i,j)))
+          evaluated at evalPts
 
 
-<img src="./solExample.png" width="100" height="30">
+## Examples
 
+#### Minimal example
+The following code solves and displays the Riemann problem.  
+```
+% specify model
+B = [1,0.9;0.9,1];
+c=1;
+% initial data
+uL = 1.2;
+vL = 0.2;
+uR = -0.8;
+vR = 1.7;
+% The solution will be evaluated at evalPts
+evalPts = -0.8:0.01:2.2;
 
+[S1,S2] = RiemannSolverMHDBurgers(uL,vL,uR,vR,B,c,evalPts);
+
+plot(evalPts,S1,'r-','LineWidth',3);hold on;
+plot(evalPts,S2,'k-','LineWidth',3)
+```
+This produces the following plot.
+<img src="./solExample.png" width="300" height="90">
+
+#### Godunov method
+
+An example for the solver used in the Godunov method can be found in `ex1_godunov.m`.
+The sequece of Riemann problems at each timestep can be solved simultaneously.
+
+<img src="./GodunovEx.png" width="300" height="110">
+
+#### Random-choice method
+
+An example for the solver used in the random-choice method (Glimm's scheme) can be found in `ex2_glimm.m`.
+
+<img src="./GlimmEx.png" width="300" height="110">
 
 
 ## Author
