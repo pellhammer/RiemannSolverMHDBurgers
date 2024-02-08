@@ -75,7 +75,7 @@ evalPts = -0.8:0.01:2.2;
 [S1,S2] = RiemannSolverMHDBurgers(uL,vL,uR,vR,B,c,evalPts);
 
 plot(evalPts,S1,'r-','LineWidth',3);hold on;
-plot(evalPts,S2,'k-','LineWidth',3)
+plot(evalPts,S2,'k-','LineWidth',3);
 ```
 This produces the following plot.
 
