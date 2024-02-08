@@ -30,7 +30,7 @@ Lax-shocks, rarefaction waves, and non-classical (undercompressive) shock waves.
 [S1,S2] = RiemannSolverMHDBurgers(uL,vL,uR,vR,B,c,evalPts);
 ```
 
-### Input:
+Input:
         uL - (array) left values in the u-variable
         uR - (array) right values in the u-variable
         vL - (array) left values in the v-variable
@@ -38,11 +38,11 @@ Lax-shocks, rarefaction waves, and non-classical (undercompressive) shock waves.
         B - (2x2 array) symmetric positive definite viscosity matrix
         evalPts - (array) evaluation points
 
-### Output 
+Output 
         S1 - (array) of the u components of the solution(s) evaluated at evalPts and t=1
         S2 - (array) of the v components of the solution(s) evaluated at evalPts and t=1
 
-### Possibilities;
+Possibilities;
         1. uL,uR,vL,vR are numbers and evalPts is a matrix:
           The output contains the values of the solution of the single Riemann
           problem with data ((uL,uR),(vL,vR)).
@@ -78,20 +78,21 @@ plot(evalPts,S1,'r-','LineWidth',3);hold on;
 plot(evalPts,S2,'k-','LineWidth',3)
 ```
 This produces the following plot.
-<img src="./solExample.png" width="300" height="90">
+
+<img src="./solExample.png" width="600" height="180">
 
 #### Godunov method
 
 An example for the solver used in the Godunov method can be found in `ex1_godunov.m`.
 The sequece of Riemann problems at each timestep can be solved simultaneously.
 
-<img src="./GodunovEx.png" width="300" height="110">
+<img src="./GodunovEx.png" width="600" height="210">
 
 #### Random-choice method
 
 An example for the solver used in the random-choice method (Glimm's scheme) can be found in `ex2_glimm.m`.
 
-<img src="./GlimmEx.png" width="300" height="110">
+<img src="./GlimmEx.png" width="600" height="210">
 
 
 ## Author
