@@ -30,30 +30,30 @@ Lax-shocks, rarefaction waves, and non-classical (undercompressive) shock waves.
 [S1,S2] = RiemannSolverMHDBurgers(uL,vL,uR,vR,B,c,evalPts);
 ```
 
-Input:
-        uL - (array) left values in the u-variable
-        uR - (array) right values in the u-variable
-        vL - (array) left values in the v-variable
-        vR - (array) right values in the v-variable
-        B - (2x2 array) symmetric positive definite viscosity matrix
-        evalPts - (array) evaluation points
+Input:  
+        uL - (array) left values in the u-variable  
+        uR - (array) right values in the u-variable  
+        vL - (array) left values in the v-variable  
+        vR - (array) right values in the v-variable  
+        B - (2x2 array) symmetric positive definite viscosity matrix  
+        evalPts - (array) evaluation points  
 
-Output 
-        S1 - (array) of the u components of the solution(s) evaluated at evalPts and t=1
-        S2 - (array) of the v components of the solution(s) evaluated at evalPts and t=1
+Output:     
+        S1 - (array) of the u components of the solution(s) evaluated at evalPts and t=1  
+        S2 - (array) of the v components of the solution(s) evaluated at evalPts and t=1  
 
-Possibilities;
-        1. uL,uR,vL,vR are numbers and evalPts is a matrix:
-          The output contains the values of the solution of the single Riemann
-          problem with data ((uL,uR),(vL,vR)).
-        2. uL,uR,vL,vR,evalPts are matrices of the same size:
-          The (i,j)-th entry of the output contains the value of the
-          solution to the Riemann problem with data ((uL(i,j),uR(i,j)),(vL(i,j),vR(i,j)))
-          evaluated at evalPts(i,j)
-        3. uL,uR,vL,vR are matrices of the same size and evalPts is a number:
-          The (i,j)-th entry of the output contains the value of the
-          solution to the Riemann problem with data ((uL(i,j),uR(i,j)),(vL(i,j),vR(i,j)))
-          evaluated at evalPts
+Possibilities:    
+        1. uL,uR,vL,vR are numbers and evalPts is a matrix:  
+          The output contains the values of the solution of the single Riemann  
+          problem with data ((uL,uR),(vL,vR)).  
+        2. uL,uR,vL,vR,evalPts are matrices of the same size:  
+          The (i,j)-th entry of the output contains the value of the  
+          solution to the Riemann problem with data ((uL(i,j),uR(i,j)),(vL(i,j),vR(i,j)))  
+          evaluated at evalPts(i,j)  
+        3. uL,uR,vL,vR are matrices of the same size and evalPts is a number:  
+          The (i,j)-th entry of the output contains the value of the  
+          solution to the Riemann problem with data ((uL(i,j),uR(i,j)),(vL(i,j),vR(i,j)))  
+          evaluated at evalPts  
 
 
 ## Examples
