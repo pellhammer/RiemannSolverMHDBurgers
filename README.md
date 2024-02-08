@@ -86,6 +86,8 @@ This produces the following plot.
 An example for the solver used in the Godunov method can be found in `ex1_godunov.m`.
 The sequence of Riemann problems at each timestep can be solved simultaneously.
 
+Feel free to try different viscosity matrices, values of $c$ and initial data!
+
 <img src="./GodunovEx.png" width="400" height="168">
 
 #### Random-choice method
@@ -93,6 +95,8 @@ The sequence of Riemann problems at each timestep can be solved simultaneously.
 An example for the solver used in the random-choice method (Glimm's scheme) can be found in `ex2_glimm.m`.
 
 <img src="./GlimmEx.png" width="400" height="168">
+
+Feel free to try different viscosity matrices, values of $c$ and initial data!
 
 
 ## Author
